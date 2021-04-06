@@ -121,10 +121,11 @@ def LoadOtherEntry(txt, EntryText, value):
 def onReceive(packet, interface): # called when a packet arrives
   #print("Received: "+str(packet))
   try:
-  	size = sys.getsizeof(packet['decoded']['data']['payload'])
+  	size = sys.getsizeof(packet['decoded']['payload'])
   	fromid = (packet['fromId'])
-  	data = (packet['decoded']['data']['payload']).decode('utf-8')
-  except:
+  	data = (packet['decoded']['payload']).decode('utf-8')
+  except Exception as ex:
+    print(ex)
   	data = (packet).decode('utf-8')
   
   data = str(data)
