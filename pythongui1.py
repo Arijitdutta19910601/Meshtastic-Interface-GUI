@@ -46,22 +46,6 @@ class RepeatedTimer(object): # Timer helper class
     self.is_running = False
 
 
-def randchar():
-	file = open('myFile.txt', 'r')
-	while True:
-        	rando = file.readline()
-        	rando = rando.strip()
-        	LoadMyEntry(txt, rando)
-        	time.sleep(2)
-        	print(rando)
-        	if not rando:
-        		break
-        	interface.sendText(rando)
-        	#Scroll to the bottom of chat windows
-        	txt.yview(END)
-	file.close()
-
-
 def playsound(soundfile):
     """Play sound through default mixer channel in blocking manner.
        This will load the whole sound into memory before playback
@@ -91,14 +75,7 @@ def LoadConnectionInfo(txt, EntryText):
 def LoadMyEntry(txt, EntryText):
     if EntryText != '':
         txt.config(state=NORMAL)
-        if txt.index('end') != None:
-            """current_time = datetime.datetime.now().time()
-            LineNumber = float(txt.index('end'))-1.0
-            txt.insert(END, "\nDevice_1-> " + EntryText + "\t\t" + str(current_time))
-            txt.tag_add("Device_1->", LineNumber, LineNumber+1.0)
-            txt.tag_config("Device_1->", foreground="#FF8000", font=("Arial", 14, "bold"))
-            txt.config(state=DISABLED)
-            txt.yview(END)"""
+
 
 def LoadOtherEntry(txt, EntryText, value):
     if EntryText != '':
@@ -121,11 +98,10 @@ def LoadOtherEntry(txt, EntryText, value):
 def onReceive(packet, interface): # called when a packet arrives
   #print("Received: "+str(packet))
   try:
-  	size = sys.getsizeof(packet['decoded']['payload'])
+  	size = sys.getsizeof(packet['decoded']['data']['payload'])
   	fromid = (packet['fromId'])
-  	data = (packet['decoded']['payload']).decode('utf-8')
-  except Exception as ex:
-    print(ex)
+  	data = (packet['decoded']['data']['payload']).decode('utf-8')
+  except:
   	data = (packet).decode('utf-8')
   
   data = str(data)
@@ -138,24 +114,15 @@ def onReceive(packet, interface): # called when a packet arrives
   #Write message to chat window
   LoadOtherEntry(txt, data, value)
   	
-  input_dict = {'data': data, 'size': size, 'fromId': fromid, 'Time_stamp': str(datetime.datetime.now().time())}
+  input_dict = {'data': data, 'size': size, 'fromId': fromid, 'Time_stamp': str(time.time())}
   result = []
   for data, size in input_dict.items():
     result.append({'Size': size, 'Data': data})
   
-  playsound("/home/arijit/meshtasticGUI/notif.wav")
+  #playsound("/home/arijit/meshtasticGUI/notif.wav")
 
   #Scroll to the bottom of chat windows
   txt.yview(END)
-  
-
-    
-  """data = json.dumps(data, indent = 2).encode('utf-8')
-  data = data.encode('ascii')
-  base64_bytes = base64.b64encode(data)
-  packet = base64_bytes.decode('ascii')
-  packet = base64.b64encode(packet)
-  data = json.dumps(packet, indent = 2)"""
   
   new = open('/home/arijit/meshtasticGUI/new.json', "a")
   new.write(json.dumps(result))
@@ -167,12 +134,12 @@ def onConnection(interface, topic=pub.AUTO_TOPIC): # called when we (re)connect 
    time.sleep(2)
    LoadConnectionInfo(txt,"Connection established Successfully\nStart Communicating..")
 
-def timer(x):
-    if x != 3:
-        print("starting random messages...")
-        randchar()
-       	#rt = RepeatedTimer(10,randchar)
-
+def stop2():
+    LoadConnectionInfo(txt, "\n\nConnection is closing now..")
+    timer(3)
+    interface.close()
+    time.sleep(1)
+    LoadConnectionInfo(txt, "Disconnected now..")
         
 def stop():
     LoadConnectionInfo(txt, "\n\nConnection is closing now..")
@@ -197,7 +164,86 @@ def send():
 
 def true():
     timer(1)
+    
+def randchar():
+        file = open('myFile.txt', 'r')
+        while True:
+        	rando = file.readline()
+        	ran = rando.strip()
+        	print(ran)
+        	LoadMyEntry(txt, ran)
+        	txt.yview(END)    #Scroll to the bottom of chat windows
+        	interface.sendText(ran)
+        	time.sleep(1)
+        	if ran == '':
+        		break
+        file.close()
+        stop2()
 
+	#time.sleep(2)
+
+
+def randchar2():
+	file_pos=0
+	with open('myFile.txt', 'r') as f:
+		for line in f:
+			l = line.strip()
+			if l is None:
+				break
+			LoadMyEntry(txt, l)
+			txt.yview(END)
+			interface.sendText(l)
+			print(l)
+			time.sleep(1)
+			file_pos += len(line)
+			f.seek(file_pos)
+	f.close()
+	stop2()
+
+
+def timer(x):
+    if x != 3:
+        print("starting random messages...")
+        #randchar2()
+        #randchar()
+        #rt = RepeatedTimer(2, randchar2)
+        #rt = RepeatedTimer(2, randchar)
+
+'''        file = open('myFile.txt', 'r')
+        while True:
+        	rando = file.readline()
+        	ran = rando.strip()
+        	print(ran)
+        	if not ran:
+        		break
+        	randchar(ran)
+        	#rt = RepeatedTimer(60, randchar(ran))
+        file.close()
+        stop2()
+        file = open('myFile.txt', 'r')
+        while True:
+        	rando = file.readline()
+        	ran = rando.strip()
+        	print(ran)
+        	if not ran:
+        		break
+        	randchar(ran)
+        	#rt = RepeatedTimer(120, randchar(ran))
+        file.close()
+        stop2()
+        file = open('myFile.txt', 'r')
+        while True:
+        	rando = file.readline()
+        	ran = rando.strip()
+        	print(ran)
+        	if not ran:
+        		break
+        	randchar(ran)
+        	rt = RepeatedTimer(180, randchar, ran)
+        file.close()
+        stop2()
+'''	
+	
 def exit():
     root.destroy()
 
