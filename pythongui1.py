@@ -204,7 +204,7 @@ def timer(x):
         	#randchar()
         	#rt = RepeatedTimer(5, randchar2)
         	rt = RepeatedTimer(5, randchar, ran)
-        	#time.sleep(5)
+        	#time.sleep(1)
         	if ran == '':
         		break
         file.close()
