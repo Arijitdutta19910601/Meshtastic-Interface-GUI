@@ -32,7 +32,9 @@ class RepeatedTimer(object): # Timer helper class
   def _run(self):
     self.is_running = False
     self.start()
-    self.function(*self.args, **self.kwargs)
+    self.s = self.function(*self.args, **self.kwargs)
+    if self.s == 1:
+    	self.stop()
 
   def start(self):
     if not self.is_running:
@@ -138,7 +140,6 @@ def stop2():
     LoadConnectionInfo(txt, "\n\nConnection is closing now..")
     timer(3)
     interface.close()
-    time.sleep(1)
     LoadConnectionInfo(txt, "Disconnected now..")
         
 def stop():
@@ -165,22 +166,12 @@ def send():
 def true():
     timer(1)
     
-def randchar():
-        file = open('myFile.txt', 'r')
-        while True:
-        	rando = file.readline()
-        	ran = rando.strip()
-        	print(ran)
-        	LoadMyEntry(txt, ran)
-        	txt.yview(END)    #Scroll to the bottom of chat windows
-        	interface.sendText(ran)
-        	time.sleep(1)
-        	if ran == '':
-        		break
-        file.close()
-        stop2()
-
-	#time.sleep(2)
+def randchar(ran):
+       	LoadMyEntry(txt, ran)
+       	txt.yview(END)    #Scroll to the bottom of chat windows
+       	interface.sendText(ran)
+       	if ran == '':
+       		return 1
 
 
 def randchar2():
@@ -199,16 +190,26 @@ def randchar2():
 			f.seek(file_pos)
 	f.close()
 	stop2()
-
+	return 1
 
 def timer(x):
     if x != 3:
         print("starting random messages...")
-        #randchar2()
-        #randchar()
-        #rt = RepeatedTimer(2, randchar2)
-        #rt = RepeatedTimer(2, randchar)
-
+        file = open('myFile.txt', 'r')
+        while True:
+        	rando = file.readline()
+        	ran = rando.strip()
+        	print(ran)
+        	#randchar2()
+        	#randchar()
+        	#rt = RepeatedTimer(5, randchar2)
+        	rt = RepeatedTimer(5, randchar, ran)
+        	#time.sleep(1)
+        	if ran == '':
+        		break
+        file.close()
+        stop2()
+        
 '''        file = open('myFile.txt', 'r')
         while True:
         	rando = file.readline()
